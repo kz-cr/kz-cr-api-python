@@ -22,6 +22,7 @@ If the CLI is unavailable, unauthenticated, or fails, stop and tell the user rat
 ```
 main.py            # entry point: creates the FastAPI app, includes each capability's router
 db.py              # Postgres connection helper (get_connection)
+auth.py            # require_api_token dependency (X-API-Token header), applied app-wide in main.py
 items/
   __init__.py      # re-exports `router`
   router.py        # GET /items
