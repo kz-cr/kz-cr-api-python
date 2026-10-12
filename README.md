@@ -43,6 +43,11 @@ Database settings are read from environment variables:
 | `DB_PASSWORD` | `app_password` |
 | `DB_NAME`     | `app`          |
 
+## Logging
+
+Every incoming request is printed to stdout as `Request: <method> <url> from <client>`
+(headers and body are not printed).
+
 ## Endpoints
 
 ### `GET /items`
