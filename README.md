@@ -12,7 +12,7 @@ main.py            # entry point, includes each capability's router
 db.py              # Postgres connection helper
 items/
   __init__.py
-  router.py        # GET /items
+  router.py        # GET /items, POST /items
 requirements.txt
 run.sh             # local run script
 ```
@@ -52,4 +52,17 @@ pagination, sorting or filtering yet.
 
 ```
 curl http://localhost:8000/items
+```
+
+### `POST /items`
+
+Creates an item from a JSON body and returns the created row (including its generated
+`id`) with `201 Created`. `name` and `category` must be non-empty, `description` is
+required, and `price` must be `>= 0`. Names are unique: a duplicate returns `409 Conflict`,
+and an invalid body returns `422`.
+
+```
+curl -X POST http://localhost:8000/items \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Whole Milk", "category": "Dairy", "description": "1 gallon whole milk.", "price": 3.49}'
 ```

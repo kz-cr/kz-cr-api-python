@@ -24,7 +24,7 @@ main.py            # entry point: creates the FastAPI app, includes each capabil
 db.py              # Postgres connection helper (get_connection)
 items/
   __init__.py      # re-exports `router`
-  router.py        # GET /items
+  router.py        # GET /items, POST /items
 requirements.txt   # fastapi, uvicorn[standard], psycopg[binary]
 run.sh             # creates .venv, installs deps, starts uvicorn with --reload
 ```
@@ -37,7 +37,7 @@ run.sh             # creates .venv, installs deps, starts uvicorn with --reload
 - **Connection per request via context manager.** `db.get_connection()` opens a new connection with `row_factory=dict_row`, so rows come back as dicts that FastAPI serializes straight to JSON. Use it as `with get_connection() as conn:` in handlers; there is no connection pool or global connection yet.
 - **Sync handlers.** Handlers are plain `def` (not `async def`) because psycopg is used synchronously; FastAPI runs them in a threadpool. Do not call blocking DB code from an `async def` handler.
 - **Configuration via environment variables.** DB settings (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`) are read in `db.py` with local-dev defaults. Do not hardcode other secrets; `.env` is git-ignored.
-- **Minimal responses.** Endpoints currently return DB rows as-is, with no Pydantic response models, pagination, sorting or filtering. Add these deliberately when needed and document them in `README.md`.
+- **Minimal responses.** Endpoints currently return DB rows as-is, with no Pydantic response models, pagination, sorting or filtering. Request bodies use Pydantic models (e.g. `NewItem`). Add these deliberately when needed and document them in `README.md`.
 
 ## Code style
 
