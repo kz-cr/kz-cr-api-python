@@ -48,10 +48,14 @@ Database settings are read from environment variables:
 ### `GET /items`
 
 Returns every row in the `items` table as a JSON array, as-is. There is no
-pagination, sorting or filtering yet.
+pagination or sorting.
+
+Optional query parameter `category`: when present, only items whose category matches
+exactly are returned.
 
 ```
 curl http://localhost:8000/items
+curl "http://localhost:8000/items?category=Produce"
 ```
 
 ### `POST /items`
