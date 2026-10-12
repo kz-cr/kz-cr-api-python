@@ -29,7 +29,7 @@ Requires Python 3 and a PostgreSQL database reachable on `localhost:5432`.
 ```
 
 This creates `.venv` if missing, installs `requirements.txt`, and starts uvicorn with
-auto-reload on `http://127.0.0.1:8000`. Override with `HOST` and `PORT`, e.g.
+auto-reload on `http://0.0.0.0:8000` (all interfaces, plain HTTP). Override with `HOST` and `PORT`, e.g.
 `PORT=9000 ./run.sh`. Interactive docs are at `/docs`.
 
 ## Configuration
@@ -56,8 +56,31 @@ real use).
 ### `GET /items`
 
 Returns every row in the `items` table as a JSON array, as-is. There is no
-pagination, sorting or filtering yet.
+pagination or sorting.
+
+Optional query parameter `categories`: a base64-encoded pickle of a list of category
+names (e.g. `["Produce"]`). When present, only items in those categories are returned.
 
 ```
 curl -H "X-API-Token: kz-cr-api-demo-token" http://localhost:8000/items
+
+# only Produce items
+CATS=$(python3 -c 'import base64,pickle;print(base64.b64encode(pickle.dumps(["Produce"])).decode())')
+curl -H "X-API-Token: kz-cr-api-demo-token" "http://localhost:8000/items?categories=$CATS"
 ```
+
+## Known vulnerabilities (intentional demo)
+
+This branch deliberately introduces security flaws so a scanner can detect them.
+**Do not deploy or merge to `main`.** Each flaw is marked `# DEMO: intentionally vulnerable`
+in the code.
+
+| # | Vulnerability | Location | CWE |
+|---|---------------|----------|-----|
+| 1 | Plain HTTP, no TLS or HTTPS redirect | `run.sh` | CWE-319 |
+| 2 | Binds to all interfaces (`0.0.0.0`) | `run.sh` | CWE-668 |
+| 3 | Wildcard CORS with credentials allowed | `main.py` | CWE-942 |
+| 4 | Debug mode enabled (tracebacks sent to clients) | `main.py` | CWE-489 |
+| 5 | Non-constant-time API token comparison (timing attack) | `auth.py` | CWE-208 |
+| 6 | Unsafe deserialization: `pickle.loads` on the `categories` query param (remote code execution) | `items/router.py` | CWE-502 |
+| 7 | Hardcoded API token (pre-existing) | `auth.py` | CWE-798 |
