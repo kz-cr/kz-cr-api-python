@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Optional
 
 import psycopg
 from fastapi import APIRouter, HTTPException, status
@@ -17,10 +18,14 @@ class NewItem(BaseModel):
 
 
 @router.get("")
-def list_items():
-    """Return all rows from the items table as-is."""
+def list_items(category: Optional[str] = None):
+    """Return all items, or only those in the given category."""
     with get_connection() as conn:
-        return conn.execute("SELECT * FROM items").fetchall()
+        if category is None:
+            return conn.execute("SELECT * FROM items").fetchall()
+        return conn.execute(
+            "SELECT * FROM items WHERE category = %s", (category,)
+        ).fetchall()
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)

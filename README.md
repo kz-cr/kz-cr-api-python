@@ -54,10 +54,14 @@ wrong token get `401 Unauthorized`. The expected token is defined in `auth.py`.
 ### `GET /items`
 
 Returns every row in the `items` table as a JSON array, as-is. There is no
-pagination, sorting or filtering yet.
+pagination or sorting.
+
+Optional query parameter `category`: when present, only items whose category matches
+exactly are returned.
 
 ```
 curl -H "X-API-Token: kz-cr-api-demo-token" http://localhost:8000/items
+curl -H "X-API-Token: kz-cr-api-demo-token" "http://localhost:8000/items?category=Produce"
 ```
 
 ### `POST /items`
