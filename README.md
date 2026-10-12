@@ -10,6 +10,7 @@ subfolder and exposes a router that `main.py` includes.
 ```
 main.py            # entry point, includes each capability's router
 db.py              # Postgres connection helper
+auth.py            # API token check applied to every endpoint
 items/
   __init__.py
   router.py        # GET /items
@@ -43,6 +44,13 @@ Database settings are read from environment variables:
 | `DB_PASSWORD` | `app_password` |
 | `DB_NAME`     | `app`          |
 
+## Authentication
+
+Every endpoint requires an `X-API-Token` request header. Requests with a missing or
+wrong token get `401 Unauthorized`. The token is currently hardcoded in `auth.py`
+as `kz-cr-api-demo-token` (demo only; move it to an environment variable before
+real use).
+
 ## Endpoints
 
 ### `GET /items`
@@ -51,5 +59,5 @@ Returns every row in the `items` table as a JSON array, as-is. There is no
 pagination, sorting or filtering yet.
 
 ```
-curl http://localhost:8000/items
+curl -H "X-API-Token: kz-cr-api-demo-token" http://localhost:8000/items
 ```
