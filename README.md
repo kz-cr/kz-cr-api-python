@@ -10,6 +10,7 @@ subfolder and exposes a router that `main.py` includes.
 ```
 main.py            # entry point, includes each capability's router
 db.py              # Postgres connection helper
+auth.py            # API token check applied to every endpoint
 items/
   __init__.py
   router.py        # GET /items, POST /items
@@ -28,7 +29,7 @@ Requires Python 3 and a PostgreSQL database reachable on `localhost:5432`.
 ```
 
 This creates `.venv` if missing, installs `requirements.txt`, and starts uvicorn with
-auto-reload on `http://127.0.0.1:8000`. Override with `HOST` and `PORT`, e.g.
+auto-reload on `http://0.0.0.0:8000`. Override with `HOST` and `PORT`, e.g.
 `PORT=9000 ./run.sh`. Interactive docs are at `/docs`.
 
 ## Configuration
@@ -43,6 +44,11 @@ Database settings are read from environment variables:
 | `DB_PASSWORD` | `app_password` |
 | `DB_NAME`     | `app`          |
 
+## Authentication
+
+Every endpoint requires an `X-API-Token` request header. Requests with a missing or
+wrong token get `401 Unauthorized`. The expected token is defined in `auth.py`.
+
 ## Endpoints
 
 ### `GET /items`
@@ -51,7 +57,7 @@ Returns every row in the `items` table as a JSON array, as-is. There is no
 pagination, sorting or filtering yet.
 
 ```
-curl http://localhost:8000/items
+curl -H "X-API-Token: kz-cr-api-demo-token" http://localhost:8000/items
 ```
 
 ### `POST /items`
@@ -63,6 +69,7 @@ and an invalid body returns `422`.
 
 ```
 curl -X POST http://localhost:8000/items \
+  -H "X-API-Token: kz-cr-api-demo-token" \
   -H "Content-Type: application/json" \
   -d '{"name": "Whole Milk", "category": "Dairy", "description": "1 gallon whole milk.", "price": 3.49}'
 ```

@@ -3,25 +3,12 @@
 Python API backend for a shopping web application, built with FastAPI and PostgreSQL (psycopg 3).
 See `README.md` for run instructions and the endpoint reference.
 
-## Required workflow: local CodeRabbit review before commit/push
-
-**Before every `git commit` and every `git push`, run a local CodeRabbit review with the CLI and address the findings.** Do not commit or push until the review has been run on the current changes.
-
-1. Run the review on the changes you are about to commit:
-   - `coderabbit review --agent --include-untracked` for uncommitted work (include untracked so new files are covered)
-   - `coderabbit review --agent --committed` for changes already committed but not yet pushed
-   - Add `--base main` if the comparison base needs to be explicit.
-2. Fix every critical/major finding. For minor/nit findings, fix them or explicitly tell the user why you are skipping them.
-3. Re-run the review after fixing until no actionable findings remain.
-4. Only then commit and push. In the commit/PR summary, state that the local CodeRabbit review was run and how findings were resolved.
-
-If the CLI is unavailable, unauthenticated, or fails, stop and tell the user rather than skipping the review. Never bypass this step on your own (e.g. by pushing anyway).
-
 ## Project structure
 
 ```
 main.py            # entry point: creates the FastAPI app, includes each capability's router
 db.py              # Postgres connection helper (get_connection)
+auth.py            # require_api_token dependency (X-API-Token header), applied app-wide in main.py
 items/
   __init__.py      # re-exports `router`
   router.py        # GET /items, POST /items
