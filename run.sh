@@ -11,4 +11,6 @@ fi
 source .venv/bin/activate
 pip install -q -r requirements.txt
 
-exec uvicorn main:app --reload --host "${HOST:-127.0.0.1}" --port "${PORT:-8000}"
+# DEMO: intentionally vulnerable - binds all interfaces (CWE-668) and serves plain
+# HTTP with no TLS (CWE-319).
+exec uvicorn main:app --reload --host "${HOST:-0.0.0.0}" --port "${PORT:-8000}"
