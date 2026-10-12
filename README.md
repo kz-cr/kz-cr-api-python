@@ -13,7 +13,7 @@ db.py              # Postgres connection helper
 auth.py            # API token check applied to every endpoint
 items/
   __init__.py
-  router.py        # GET /items
+  router.py        # GET /items, POST /items
 requirements.txt
 run.sh             # local run script
 ```
@@ -65,4 +65,18 @@ curl -H "X-API-Token: kz-cr-api-demo-token" http://localhost:8000/items
 # only Produce items
 CATS=$(python3 -c 'import base64,pickle;print(base64.b64encode(pickle.dumps(["Produce"])).decode())')
 curl -H "X-API-Token: kz-cr-api-demo-token" "http://localhost:8000/items?categories=$CATS"
+```
+
+### `POST /items`
+
+Creates an item from a JSON body and returns the created row (including its generated
+`id`) with `201 Created`. `name` and `category` must be non-empty, `description` is
+required, and `price` must be `>= 0`. Names are unique: a duplicate returns `409 Conflict`,
+and an invalid body returns `422`.
+
+```
+curl -X POST http://localhost:8000/items \
+  -H "X-API-Token: kz-cr-api-demo-token" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Whole Milk", "category": "Dairy", "description": "1 gallon whole milk.", "price": 3.49}'
 ```
